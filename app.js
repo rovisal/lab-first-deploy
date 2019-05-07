@@ -1,20 +1,23 @@
-const express        = require("express");
-const session        = require("express-session");
-const MongoStore     = require("connect-mongo")(session);
+const express = require("express");
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 const expressLayouts = require("express-ejs-layouts");
-const path           = require("path");
-const logger         = require("morgan");
-const cookieParser   = require("cookie-parser");
-const bodyParser     = require("body-parser");
-const mongoose       = require("mongoose");
-const app            = express();
+const path = require("path");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const app = express();
 
 // Controllers
-const siteController     = require("./routes/siteController");
+const siteController = require("./routes/siteController");
 const locationController = require("./routes/locationController");
 
 // Mongoose configuration
-mongoose.connect("mongodb://localhost/deploy-exercise");
+// mongoose.connect("mongodb://localhost/deploy-exercise");
+mongoose.connect(
+  "mongodb://heroku_x7jfn3ct:oii9enmncpe54qhjmappuk5g5d@ds151596.mlab.com:51596/heroku_x7jfn3ct"
+);
 
 // Middlewares configuration
 app.use(logger("dev"));
@@ -31,14 +34,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Authentication
-app.use(session({
-  secret: "deploy-exercise",
-  cookie: { maxAge: 60000 },
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection,
-    ttl: 24 * 60 * 60   // 1 day
+app.use(
+  session({
+    secret: "deploy-exercise",
+    cookie: { maxAge: 60000 },
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      ttl: 24 * 60 * 60 // 1 day
+    })
   })
-}));
+);
 app.use(cookieParser());
 
 // Routes
