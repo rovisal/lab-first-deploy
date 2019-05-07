@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
+require("dotenv").config();
 
 // Controllers
 const siteController = require("./routes/siteController");
@@ -15,9 +16,13 @@ const locationController = require("./routes/locationController");
 
 // Mongoose configuration
 // mongoose.connect("mongodb://localhost/deploy-exercise");
-mongoose.connect(
-  "mongodb://heroku_x7jfn3ct:oii9enmncpe54qhjmappuk5g5d@ds151596.mlab.com:51596/heroku_x7jfn3ct"
-);
+mongoose.connect(process.env.MONGODB_URI, {
+  useMongoClient: true
+  /* other options */
+});
+// mongoose.connect(
+//   "mongodb://heroku_x7jfn3ct:oii9enmncpe54qhjmappuk5g5d@ds151596.mlab.com:51596/heroku_x7jfn3ct"
+// );
 
 // Middlewares configuration
 app.use(logger("dev"));
@@ -38,6 +43,8 @@ app.use(
   session({
     secret: "deploy-exercise",
     cookie: { maxAge: 60000 },
+    resave: true,
+    saveUninitialized: true,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       ttl: 24 * 60 * 60 // 1 day
